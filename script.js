@@ -55,7 +55,7 @@ document.getElementById("btnAdmin").style.display =
     aktuelleBenutzerRolle === "admin"
         ? "block"
         : "none";
-
+await initialisiereDienstplan();
 console.log("Anmeldung erfolgreich");
 }
 
@@ -1817,7 +1817,7 @@ async function ladePlanung() {
    START
 ========================== */
 
-window.onload = async function () {
+async function initialisiereDienstplan() {
 
 const heute = new Date();
 
