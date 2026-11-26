@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dienstplan V_2027</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="header">
+        Dienstplan V_2027
+    </div>
+
+    <div class="toolbar">
+
+        <label>Von:</label>
+        <input type="date" id="von">
+
+        <label>Bis:</label>
+        <input type="date" id="bis">
+          
+        <button onclick="ladePlan()">
+           Dienstplan Laden
+        </button>
+   
+<div class="standortFilter">
+
+    <label class="standortLabel">
+
+        Standort
+
+    </label>
+
+ <select
+    id="standortFilter"
+    onchange="ladePlan()">
+
+
+        <option value="Alle">
+
+            Alle Standorte
+
+        </option>
+
+    </select>
+</div>
+         
+    </div>
+
+   <div class="layout">
+
+    <div class="menu">
+
+        <h3>Menü</h3>
+
+      
+         <button onclick="fahrerInfo()">
+             Fahrer Info
+        </button>
+           <button onclick="fahrzeugInfo()">
+             Fahrzeug Info
+        </button>
+        <button onclick="fahrerStatusAendern()">
+            Fahrer Status ändern
+        </button>
+        <hr>
+        <button
+    onclick="fehlzeitErfassen()">
+
+    Fehlzeit erfassen
+
+</button>
+     <button
+    onclick="aktuelleAbwesenheiten()">
+
+    Aktuell Abwesend
+
+</button>   
+ <hr>
+
+<button onclick="toggleFuhrpark()">
+
+    🚚 Fuhrpark ▼
+
+</button>
+
+<div id="fuhrparkMenu"
+     style="display:none;">
+
+    <button onclick="fahrzeugAnlegen()">
+
+        + Fahrzeug anlegen
+
+    </button>
+
+    <button onclick="fahrzeugStatusAendern()">
+
+        Fahrzeug Status ändern
+
+    </button>
+
+</div>
+
+<hr>
+
+<button onclick="toggleAdmin()">
+
+    ⚙ Admin ▼
+
+</button>
+
+<div id="adminMenu"
+     style="display:none;">
+
+    <button onclick="fahrerHinzufuegen()">
+
+        + Fahrer anlegen
+
+    </button>
+
+    <button onclick="dienstAnlegen()">
+
+        + Dienst anlegen
+
+    </button>
+
+    <button onclick="dienstStatusAendern()">
+
+        Dienst Status ändern
+
+    </button>
+
+</div>    
+    </div>
+    <div class="planbereich">
+
+        <table>
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
+        </table>
+
+    </div>
+
+    <div class="sidebar">
+
+        <h3>Offene Dienste</h3>
+
+        <div id="offeneDienste"></div>
+
+    </div>
+
+</div>
+
+    </div>
+
+    <!-- Modal -->
+
+    <div id="modalOverlay" class="modalOverlay">
+
+        <div class="modal">
+
+            <h2>Planung bearbeiten</h2>
+
+            
+<label>
+    Art
+</label>
+
+<select
+    id="artInput"
+    onchange="artGeaendert()">
+
+    <option value="Dienst">
+
+        Dienst
+
+    </option>
+
+    <option value="Frei">
+
+        Frei
+
+    </option>
+
+</select>
+    <div id="dienstBlock">            
+                <label>Dienst</label>
+
+                <select id="dienstInput">
+       
+                </select>
+
+                <label>Fahrzeug</label>
+
+                <select id="fahrzeugInput">
+                 
+                </select>
+
+            </div>
+
+            <div class="modalButtons">
+
+                <button onclick="speichernZelle()">
+                    Speichern
+                </button>
+<button
+    onclick="entferneEintrag()">
+
+    Entfernen
+
+</button>
+                <button onclick="schliessenModal()">
+                    Abbrechen
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div id="fahrerInfoOverlay" class="modalOverlay">
+
+<div class="modal">
+
+<h2>Fahrerinfo</h2>
+<select id="fahrerInfoSelect"
+        onchange="aktualisiereFahrerInfo()">
+</select>
+<div id="fahrerInfoDaten">
+</div>
+
+<div class="modalButtons">
+
+<button onclick="schliesseFahrerInfo()">
+Schließen
+</button>
+
+</div>
+
+</div>
+
+</div>
+        
+    <div id="fahrzeugInfoOverlay" class="modalOverlay">
+
+<div class="modal">
+
+<h2>Fahrzeuginfo</h2>
+<select id="fahrzeugInfoSelect"
+        onchange="aktualisiereFahrzeugInfo()">
+</select>
+<div id="fahrzeugInfoDaten">
+</div>
+
+<div class="modalButtons">
+
+<button onclick="schliesseFahrzeugInfo()">
+Schließen
+</button>
+
+</div>
+
+</div>
+
+</div>
+   <div id="aktuellAbwesendOverlay"
+     class="modalOverlay">
+
+    <div class="modal">
+
+        <h2>
+
+            Aktuell abwesende Fahrer
+
+        </h2>
+
+        <div id="aktuellAbwesendListe">
+        </div>
+
+       <div class="modalButtons">
+
+    <button onclick="schliesseAktuellAbwesend()">
+        Schließen
+    </button>
+</div>
+
+    </div>
+
+</div> 
+<div id="fahrerNeuOverlay" class="modalOverlay">
+    <div class="modal">
+        <h2>Fahrer anlegen</h2>
+
+        <label>Nachname</label>
+        <input type="text" id="neuFamilienname">
+
+        <label>Vorname</label>
+        <input type="text" id="neuVorname">
+
+        <label>Chip</label>
+        <input type="text" id="neuChip">
+
+        <label>Standort</label>
+        <select
+            id="neuFahrerStandort"
+            onchange="aktualisiereNeuFahrerSortierung()">
+            <option value="">Standort auswählen</option>
+        </select>
+
+        <label>Nächste Sortierung am Standort</label>
+        <input type="number" id="neuSortierung" readonly>
+
+        <div class="modalButtons">
+            <button onclick="fahrerSpeichern()">
+                Speichern
+            </button>
+            <button onclick="schliesseNeuenFahrer()">
+                Abbrechen
+            </button>
+        </div>
+    </div>
+</div>
+           <div id="fahrzeugNeuOverlay"
+        class="modalOverlay">
+        <div class="modal">
+            <h2>Fahrzeug anlegen</h2>
+            <label>Kennzeichen</label>
+            <input
+                type="text"
+                id="neuKennzeichen">
+            <label>Fahrzeugnummer</label>
+            <input
+                type="text"
+                id="neuFahrzeugnummer">
+            <label>Kategorie</label>
+            <input
+        type= "text"
+        id="neuKategorie">
+              <label>Standort</label>
+            <input
+        type= "text"
+        id="neuFahrzeugStandort">
+    <div class="modalButtons">
+        <button
+            onclick="fahrzeugSpeichern()">
+            Speichern
+        </button>
+        <button
+            onclick="schliesseNeuesFahrzeug()">
+            Abbrechen
+        </button>
+    </div>
+</div>
+</div>
+ <div id="fahrerStatusOverlay"
+        class="modalOverlay">
+        <div class="modal">
+            <h2>Fahrerstatus ändern</h2>
+            <label>Fahrer</label>
+            <select id ="fahrerStatusSelect"></select>
+        <label>Status</label>
+             <select id ="fahrerStatusNeu">
+            <option>Aktiv</option>
+            <option>Inaktiv</option>
+            </select>
+            <label>Ab Datum</label>
+            <input type= "date" 
+                id="fahrerStatusDatum">
+    <div class="modalButtons">
+        <button
+            onclick="fahrerStatusSpeichern()">
+            Speichern
+        </button>
+        <button
+            onclick="schliesseFahrerStatus()">
+            Abbrechen
+        </button>
+    </div>
+</div>
+</div>  
+     <div id="fahrzeugStatusOverlay"
+        class="modalOverlay">
+        <div class="modal">
+            <h2>Fahrzeugstatus ändern</h2>
+            <label>Fahrzeug</label>
+            <select id ="fahrzeugStatusSelect"></select>
+        <label>Status</label>
+             <select id ="fahrzeugStatusNeu">
+            <option>Aktiv</option>
+            <option>Inaktiv</option>
+            <option>Werkstatt</option>
+            <option>Ausgeschieden</option>
+        </select>
+            <label>Ab Datum</label>
+            <input type= "date" 
+                id="fahrzeugStatusDatum">
+    <div class="modalButtons">
+        <button
+            onclick="fahrzeugStatusSpeichern()">
+            Speichern
+        </button>
+        <button
+            onclick="schliesseFahrzeugStatus()">
+            Abbrechen
+        </button>
+    </div>
+</div>
+</div>  
+       <div id="dienstNeuOverlay"
+        class="modalOverlay">
+        <div class="modal">
+            <h2>Dienst anlegen</h2>
+            <label>Bezeichnung</label>
+            <input
+                type="text"
+                id="neuBezeichnung">
+           <label>Standort</label>
+<select id="neuStandort">
+    <option value="">Standort auswählen</option>
+</select>
+    <label>Art</label>
+
+    <select id="neuArt">
+
+    <option value="Fix">
+        Fix
+    </option>
+
+    <option value="Bedarf">
+        Bedarf
+    </option>
+
+</select>
+    <div class="modalButtons">
+        <button
+            onclick="dienstSpeichern()">
+            Speichern
+        </button>
+        <button
+            onclick="schliesseNeuenDienst()">
+            Abbrechen
+        </button>
+    </div>
+</div>
+    </div>
+     <div id="dienstStatusOverlay"
+        class="modalOverlay">
+        <div class="modal">
+            <h2>Dienststatus ändern</h2>
+            <label>Dienst</label>
+            <select id ="dienstStatusSelect"></select>
+        <label>Status</label>
+             <select id ="dienstStatusNeu">
+            <option>Aktiv</option>
+            <option>Inaktiv</option>
+            <option>Reserve</option>
+           </select>
+            <label>Ab Datum</label>
+            <input type= "date" 
+                id="dienstStatusDatum">
+    <div class="modalButtons">
+        <button
+            onclick="dienstStatusSpeichern()">
+            Speichern
+        </button>
+        <button
+            onclick="schliesseDienstStatus()">
+            Abbrechen
+        </button>
+    </div>
+</div>
+</div>  
+ <div id="konfliktOverlay"
+     class="modalOverlay">
+
+    <div class="modal">
+
+        <h2 id="konfliktTitel">
+
+            Dienst bereits verplant
+
+        </h2>
+
+        <div id="konfliktText">
+        </div>
+
+        <div class="modalButtons">
+
+            <button
+                id="konfliktButton"
+                onclick="konfliktFortfahren()">
+
+                Trotzdem speichern
+
+            </button>
+
+            <button
+                onclick="konfliktAbbrechen()">
+
+                Abbrechen
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div> 
+                        
+        
+    <div id="meldung"></div>
+
+
+
+<div id="fehlzeitOverlay"
+     class="modalOverlay">
+
+    <div class="modal">
+
+        <h2>
+            Fehlzeit erfassen
+        </h2>
+
+        <label>
+            Fahrer
+        </label>
+
+        <select
+            id="fehlzeitFahrer">
+        </select>
+
+        <label>
+            Von
+        </label>
+
+        <input
+            type="date"
+            id="fehlzeitVon">
+
+        <label>
+            Bis
+        </label>
+
+        <input
+            type="date"
+            id="fehlzeitBis">
+
+        <label>
+            Art
+        </label>
+
+        <select
+            id="fehlzeitArt">
+        </select>
+
+        <label>
+            Bemerkung
+        </label>
+
+        <textarea
+            id="fehlzeitBemerkung" rows="3">
+        </textarea>
+
+        <div class="modalButtons">
+
+            <button
+                onclick="fehlzeitSpeichern()">
+
+                Speichern
+
+            </button>
+
+            <button
+                onclick="schliesseFehlzeit()">
+
+                Abbrechen
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script src="script.js"></script>
+</body>
+</html>
