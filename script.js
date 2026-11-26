@@ -9,6 +9,27 @@ const supabaseClient =
         supabaseUrl,
         supabaseKey
     );
+async function benutzerAnmelden() {
+    const email = document.getElementById("loginEmail").value.trim();
+    const passwort = document.getElementById("loginPasswort").value;
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: passwort
+    });
+
+    if (error) {
+        document.getElementById("loginFehler").textContent =
+            "Anmeldung fehlgeschlagen. Bitte Zugangsdaten prüfen.";
+        return;
+    }
+
+    document.getElementById("loginFehler").textContent = "";
+    console.log("Anmeldung erfolgreich");
+}
+
+document.getElementById("loginButton")
+    .addEventListener("click", benutzerAnmelden);
 let aktuellerFahrer = "";
 let aktuellesDatum = "";
 
