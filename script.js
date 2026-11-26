@@ -872,57 +872,72 @@ function artGeaendert() {
 }
 function entferneEintrag() {
 
-zeigeKonflikt(
+    const key = getKey(
+        aktuellerFahrer,
+        aktuellesDatum
+    );
 
-    "Eintrag entfernen",
+    const eintrag = plan[key];
 
-    "Eintrag wirklich entfernen?",
+    const istFrei = eintrag?.art === "Frei";
 
-    "Entfernen",
+    zeigeKonflikt(
+        istFrei ? "Frei entfernen" : "Eintrag entfernen",
+        istFrei
+            ? "Frei entfernen und vorherigen Dienst wiederherstellen?"
+            : "Eintrag wirklich entfernen?",
+        "Entfernen",
 
-    async function () {
+        async function () {
 
-        const key =
-            getKey(
-                aktuellerFahrer,
-                aktuellesDatum
+            if (istFrei && eintrag.dienst) {
+
+                const { error } =
+                    await supabaseClient
+                        .from("Planung")
+                        .update({
+                            art: "Dienst"
+                        })
+                        .eq("fahrer", aktuellerFahrer)
+                        .eq("datum", aktuellesDatum);
+
+                if (error) {
+                    console.log(error);
+                    zeigeMeldung("❌ Fehler beim Wiederherstellen");
+                    return;
+                }
+
+            } else {
+
+                const { error } =
+                    await supabaseClient
+                        .from("Planung")
+                        .delete()
+                        .eq("fahrer", aktuellerFahrer)
+                        .eq("datum", aktuellesDatum);
+
+                if (error) {
+                    console.log(error);
+                    zeigeMeldung("❌ Fehler beim Entfernen");
+                    return;
+                }
+
+            }
+
+            await ladePlanung();
+            await ladeFehlzeiten();
+
+            ladePlan();
+            schliessenModal();
+
+            zeigeMeldung(
+                istFrei && eintrag?.dienst
+                    ? "✅ Dienst wiederhergestellt"
+                    : "✅ Eintrag entfernt"
             );
 
-        delete plan[key];
-
-        const { error } =
-            await supabaseClient
-                .from("Planung")
-                .delete()
-                .eq(
-                    "fahrer",
-                    aktuellerFahrer
-                )
-                .eq(
-                    "datum",
-                    aktuellesDatum
-                );
-
-        if (error) {
-
-            console.log(error);
-
-            return;
-
         }
-
-        ladePlan();
-
-        schliessenModal();
-
-        zeigeMeldung(
-            "✅ Eintrag entfernt"
-        );
-
-    }
-
-);
-
+    );
 }
 async function speicherePlanEintrag(
     key,
