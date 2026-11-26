@@ -959,10 +959,10 @@ async function speicherePlanEintrag(
                         art,
 
                     dienst:
-                        dienst,
+                        plan[key].dienst,
 
                     fahrzeug:
-                        fahrzeug
+                        plan[key].fahrzeug
                 }
             ]);
 
