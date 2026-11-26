@@ -45,6 +45,16 @@ if (rollenFehler || !rollenDaten) {
 }
 
 aktuelleBenutzerRolle = rollenDaten.rolle;
+document.getElementById("btnFuhrpark").style.display =
+    (aktuelleBenutzerRolle === "fuhrpark" ||
+     aktuelleBenutzerRolle === "admin")
+        ? "block"
+        : "none";
+
+document.getElementById("btnAdmin").style.display =
+    aktuelleBenutzerRolle === "admin"
+        ? "block"
+        : "none";
 
 console.log("Anmeldung erfolgreich");
 }
