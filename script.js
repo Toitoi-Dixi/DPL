@@ -59,8 +59,10 @@ document.getElementById("btnAdmin").style.display =
 console.log("Anmeldung erfolgreich");
 }
 
-document.getElementById("loginButton")
-    .addEventListener("click", benutzerAnmelden);
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("loginButton")
+        .addEventListener("click", benutzerAnmelden);
+});
 let aktuellerFahrer = "";
 let aktuellesDatum = "";
 
