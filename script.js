@@ -9,6 +9,7 @@ const supabaseClient =
         supabaseUrl,
         supabaseKey
     );
+let aktuelleBenutzerRolle = null;
 async function benutzerAnmelden() {
     const email = document.getElementById("loginEmail").value.trim();
     const passwort = document.getElementById("loginPasswort").value;
@@ -25,7 +26,27 @@ async function benutzerAnmelden() {
     }
 
     document.getElementById("loginFehler").textContent = "";
-    console.log("Anmeldung erfolgreich");
+    
+ document.getElementById("loginBereich").style.display = "none";
+document.getElementById("dienstplanBereich").style.display = "block";
+const { data: { user } } = await supabaseClient.auth.getUser();
+
+const { data: rollenDaten, error: rollenFehler } = await supabaseClient
+    .from("benutzer_rollen")
+    .select("rolle")
+    .eq("user_id", user.id)
+    .single();
+
+if (rollenFehler || !rollenDaten) {
+    document.getElementById("loginFehler").textContent =
+        "Keine Benutzerberechtigung vorhanden.";
+    await supabaseClient.auth.signOut();
+    return;
+}
+
+aktuelleBenutzerRolle = rollenDaten.rolle;
+
+console.log("Anmeldung erfolgreich");
 }
 
 document.getElementById("loginButton")
@@ -183,6 +204,9 @@ function zeigeMeldung(text) {
     }, 3000);
 }
 function toggleAdmin() {
+    if (aktuelleBenutzerRolle !== "admin") {
+        return;
+    }
 
     const menu =
         document.getElementById(
@@ -206,7 +230,12 @@ function toggleAdmin() {
 
 }
 function toggleFuhrpark() {
-
+    if (
+        aktuelleBenutzerRolle !== "fuhrpark" &&
+        aktuelleBenutzerRolle !== "admin"
+    ) {
+        return;
+    }
     const menu =
         document.getElementById(
             "fuhrparkMenu"
