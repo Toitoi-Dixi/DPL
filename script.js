@@ -971,12 +971,16 @@ function entferneEintrag() {
 
             } else {
 
-                const { error } =
-                    await supabaseClient
-                        .from("Planung")
-                        .delete()
-                        .eq("fahrer", aktuellerFahrer)
-                        .eq("datum", aktuellesDatum);
+          const { error } =
+    await supabaseClient
+        .from("Planung")
+        .upsert([{
+            fahrer: aktuellerFahrer,
+            datum: aktuellesDatum,
+            art: "Leer",
+            dienst: eintrag?.dienst || "",
+            fahrzeug: ""
+        }]);  
 
                 if (error) {
                     console.log(error);
@@ -1787,36 +1791,30 @@ async function ladePlanung() {
     const { data, error } =
         await supabaseClient
             .from("Planung")
-            .select("*");
+            .select("*")
+            .order("id", {
+                ascending: true
+            });
 
     if (error) {
-
         console.log(error);
         return;
-
     }
 
     plan = {};
 
     data.forEach(eintrag => {
 
-        const key =
-            getKey(
-                eintrag.fahrer,
-                eintrag.datum
-            );
+        const key = getKey(
+            eintrag.fahrer,
+            eintrag.datum
+        );
 
         plan[key] = {
-
-            art:
-                eintrag.art,
-
-            dienst:
-                eintrag.dienst || "",
-
-            fahrzeug:
-                eintrag.fahrzeug || ""
-
+            id: eintrag.id,
+            art: eintrag.art,
+            dienst: eintrag.dienst || "",
+            fahrzeug: eintrag.fahrzeug || ""
         };
 
     });
