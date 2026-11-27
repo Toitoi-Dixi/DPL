@@ -1418,7 +1418,41 @@ function dienstAblegen(event, fahrer, datum) {
         );
         return;
     }
+const key = getKey(fahrer, datum);
 
+const planEintrag = plan[key];
+
+const wochentag = [
+    "Sonntag",
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag"
+][new Date(datum + "T00:00:00").getDay()];
+
+const matrixEintrag = wochenmatrix.find(
+    w =>
+        w.fahrer === fahrer &&
+        w.wochentag === wochentag
+);
+
+let bestehenderDienst = "";
+
+if (planEintrag) {
+
+    if (planEintrag.art === "Dienst") {
+        bestehenderDienst = planEintrag.dienst || "";
+    }
+
+} else {
+
+    bestehenderDienst = matrixEintrag?.dienst || "";
+
+}
+
+console.log("Bestehender Dienst:", bestehenderDienst);
     console.log("Drag & Drop erkannt:", {
         fahrer: fahrer,
         datum: datum,
