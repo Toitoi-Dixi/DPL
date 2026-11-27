@@ -1389,6 +1389,7 @@ function offeneDiensteAnzeigen() {
     });
 
 }
+let dragDropDaten = null;
 function dienstAblegen(event, fahrer, datum) {
 
     event.preventDefault();
@@ -1453,32 +1454,25 @@ if (planEintrag) {
 }
 
 console.log("Bestehender Dienst:", bestehenderDienst);
-   if (bestehenderDienst) {
+ if (bestehenderDienst) {
 
-    zeigeKonflikt(
-        "Fahrer bereits eingeteilt",
-        "Der Fahrer hat bereits den Dienst: " +
-        bestehenderDienst +
-        ". Möchtest du diesen durch " +
-        daten.dienst +
-        " ersetzen?",
-        "Dienst ersetzen",
-        function () {
+    dragDropDaten = {
+        fahrer: fahrer,
+        datum: datum,
+        dienst: daten.dienst,
+        bisherigerDienst: bestehenderDienst
+    };
 
-            console.log(
-                "Ersetzen bestätigt:",
-                daten.dienst
-            );
+    document.getElementById("dragDropInfo").textContent =
+        "Fahrer: " + fahrer +
+        " | Bisher: " + bestehenderDienst +
+        " | Neu: " + daten.dienst;
 
-            zeigeMeldung(
-                "Ersetzen bestätigt"
-            );
-
-        }
-    );
+    document.getElementById("dragDropOverlay")
+        .style.display = "flex";
 
     return;
-} 
+}
     console.log("Drag & Drop erkannt:", {
         fahrer: fahrer,
         datum: datum,
@@ -1488,6 +1482,14 @@ console.log("Bestehender Dienst:", bestehenderDienst);
     zeigeMeldung(
         "Dienst erkannt: " + daten.dienst
     );
+}
+function dragDropAbbrechen() {
+
+    document.getElementById("dragDropOverlay")
+        .style.display = "none";
+
+    dragDropDaten = null;
+
 }
 /* ==========================
    MATRIX
