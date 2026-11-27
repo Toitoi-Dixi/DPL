@@ -1334,36 +1334,60 @@ return eindeutig;
 function offeneDiensteAnzeigen() {
 
     const container =
-        document.getElementById(
-            "offeneDienste"
-        );
+        document.getElementById("offeneDienste");
 
     if (!container) return;
 
     container.innerHTML = "";
 
-    const liste =
-        offeneDiensteErmitteln();
+    const liste = offeneDiensteErmitteln();
 
-    for (let i = 0; i < liste.length; i++) {
+    liste.forEach(eintrag => {
+
+        const element =
+            document.createElement("div");
+
+        element.className = "offen";
+
+        element.draggable = true;
 
         const datumObj =
-            new Date(
-                liste[i].datum
-            );
+            new Date(eintrag.datum + "T00:00:00");
 
         const datumText =
-            datumObj.toLocaleDateString(
-                "de-DE"
+            datumObj.toLocaleDateString("de-DE");
+
+        const datumAnzeige =
+            document.createElement("div");
+
+        datumAnzeige.textContent = datumText;
+
+        const dienstAnzeige =
+            document.createElement("div");
+
+        dienstAnzeige.textContent = eintrag.dienst;
+
+        element.appendChild(datumAnzeige);
+        element.appendChild(dienstAnzeige);
+
+        element.addEventListener("dragstart", function(event) {
+
+            event.dataTransfer.setData(
+                "text/plain",
+                JSON.stringify({
+                    datum: eintrag.datum,
+                    dienst: eintrag.dienst
+                })
             );
 
-        container.innerHTML +=
-            "<div class='offen'>" +
-            datumText +
-            "<br>" +
-            liste[i].dienst +
-            "</div>";
-    }
+            event.dataTransfer.effectAllowed = "move";
+
+        });
+
+        container.appendChild(element);
+
+    });
+
 }
 
 /* ==========================
