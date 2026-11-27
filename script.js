@@ -1198,10 +1198,9 @@ function offeneDiensteErmitteln() {
 
         }
 
-      if (
-    istAbwesenheit(
-        eintrag.art
-    )
+if (
+    istAbwesenheit(eintrag.art) ||
+    eintrag.art === "Leer"
 ) {
 
     if (
