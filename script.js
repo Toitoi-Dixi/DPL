@@ -1537,7 +1537,10 @@ function dragDropErsetzen() {
     if (!dragDropDaten) {
         return;
     }
+const neuesFahrzeug =
+    document.getElementById("dragDropFahrzeug").value;
 
+console.log("Ausgewähltes Fahrzeug:", neuesFahrzeug);
     console.log("Dienst ersetzen:", {
         fahrer: dragDropDaten.fahrer,
         datum: dragDropDaten.datum,
