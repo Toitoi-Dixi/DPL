@@ -510,7 +510,45 @@ Schließen
     </div>
 
 </div> 
-                        
+    <div id="dragDropOverlay" class="modalOverlay">
+
+    <div class="modal">
+
+        <h2>Dienstzuweisung</h2>
+
+        <p id="dragDropInfo"></p>
+
+        <div class="modalButtons">
+
+            <button
+                type="button"
+                onclick="dragDropErsetzen()">
+                🔄 Dienst ersetzen
+            </button>
+
+            <button
+                type="button"
+                onclick="dragDropTeilen()">
+                ✂️ Dienst teilen
+            </button>
+
+            <button
+                type="button"
+                onclick="dragDropZusaetzlich()">
+                ➕ Zusätzlich zuweisen
+            </button>
+
+            <button
+                type="button"
+                onclick="dragDropAbbrechen()">
+                ❌ Abbrechen
+            </button>
+
+        </div>
+
+    </div>
+
+</div>                    
         
     <div id="meldung"></div>
 
