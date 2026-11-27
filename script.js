@@ -1389,7 +1389,46 @@ function offeneDiensteAnzeigen() {
     });
 
 }
+function dienstAblegen(event, fahrer, datum) {
 
+    event.preventDefault();
+    event.stopPropagation();
+
+    const datenText =
+        event.dataTransfer.getData("text/plain");
+
+    if (!datenText) return;
+
+    let daten;
+
+    try {
+        daten = JSON.parse(datenText);
+    } catch (error) {
+        zeigeMeldung("Ungültige Dienstdaten");
+        return;
+    }
+
+    if (!daten.dienst || !daten.datum) {
+        return;
+    }
+
+    if (daten.datum !== datum) {
+        zeigeMeldung(
+            "Dienst gehört zu einem anderen Datum"
+        );
+        return;
+    }
+
+    console.log("Drag & Drop erkannt:", {
+        fahrer: fahrer,
+        datum: datum,
+        dienst: daten.dienst
+    });
+
+    zeigeMeldung(
+        "Dienst erkannt: " + daten.dienst
+    );
+}
 /* ==========================
    MATRIX
 ========================== */
@@ -1793,16 +1832,22 @@ else if (
                 tagesKlasse = "sonntag";
             }
 
-            row +=
-                "<td class='zelle " +
-                klasse +
-                " " +
-                tagesKlasse +
-                "' onclick=\"zelleBearbeiten('" +
-                fahrer.name +
-                "','" +
-                datum +
-                "')\">" +
+          row +=
+    "<td class='zelle " +
+    klasse +
+    " " +
+    tagesKlasse +
+    "' ondragover=\"event.preventDefault()\"" +
+    " ondrop=\"dienstAblegen(event, '" +
+    fahrer.name +
+    "', '" +
+    datum +
+    "')\"" +
+    " onclick=\"zelleBearbeiten('" +
+    fahrer.name +
+    "','" +
+    datum +
+    "')\">" +
 
                 "<div class='dienst'>" +
                 text1 +
