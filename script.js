@@ -1491,6 +1491,25 @@ function dragDropAbbrechen() {
     dragDropDaten = null;
 
 }
+function dragDropErsetzen() {
+
+    if (!dragDropDaten) {
+        return;
+    }
+
+    console.log("Dienst ersetzen:", {
+        fahrer: dragDropDaten.fahrer,
+        datum: dragDropDaten.datum,
+        alterDienst: dragDropDaten.bisherigerDienst,
+        neuerDienst: dragDropDaten.dienst
+    });
+
+    zeigeMeldung(
+        "Dienst ersetzen vorbereitet"
+    );
+
+    dragDropAbbrechen();
+}
 /* ==========================
    MATRIX
 ========================== */
