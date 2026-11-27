@@ -1589,7 +1589,7 @@ const datum =
         fahrzeug: eintrag?.fahrzeug || ""
     };
 }
-            const planEintrag =
+      const planEintrag =
     plan[
         getKey(
             fahrer.name,
@@ -1604,6 +1604,15 @@ const abwesenheit =
     );
 
 if (
+    planEintrag?.art === "Leer"
+) {
+    daten = {
+        art: "",
+        dienst: "",
+        fahrzeug: ""
+    };
+}
+else if (
     planEintrag?.art === "Frei"
 ) {
     daten = {
@@ -1621,7 +1630,7 @@ else if (
         dienst: daten.dienst,
         fahrzeug: daten.fahrzeug
     };
-}
+}  
             let text1 = "";
             let text2 = "";
             let klasse = "";
