@@ -772,6 +772,37 @@ function fahrzeugInfo() {
     ).style.display = "flex";
 
 }
+function ladeDragDropFahrzeuge(bisherigesFahrzeug = "") {
+
+    const select =
+        document.getElementById("dragDropFahrzeug");
+
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    const leerOption = document.createElement("option");
+    leerOption.value = "";
+    leerOption.textContent = "Kein Fahrzeug ausgewählt";
+    select.appendChild(leerOption);
+
+    fahrzeugStammdaten.forEach(fahrzeug => {
+
+        const option = document.createElement("option");
+
+        option.value = fahrzeug.interne_ID;
+
+        option.textContent =
+            fahrzeug.kennzeichen +
+            " - " +
+            fahrzeug.interne_ID;
+
+        select.appendChild(option);
+
+    });
+
+    select.value = bisherigesFahrzeug || "";
+}
 function aktualisiereFahrzeugInfo() {
 
     const fahrzeugID =
@@ -1463,6 +1494,16 @@ console.log("Bestehender Dienst:", bestehenderDienst);
         bisherigerDienst: bestehenderDienst
     };
 
+
+const bisherigesFahrzeug =
+    plan[key]?.fahrzeug ||
+    matrixEintrag?.fahrzeug ||
+    "";
+
+ladeDragDropFahrzeuge(bisherigesFahrzeug);
+
+document.getElementById("dragDropFahrzeugBereich")
+    .style.display = "block";
     document.getElementById("dragDropInfo").textContent =
         "Fahrer: " + fahrer +
         " | Bisher: " + bestehenderDienst +
