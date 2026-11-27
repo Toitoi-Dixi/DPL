@@ -971,16 +971,32 @@ function entferneEintrag() {
 
             } else {
 
-          const { error } =
-    await supabaseClient
+const daten = {
+    fahrer: aktuellerFahrer,
+    datum: aktuellesDatum,
+    art: "Leer",
+    dienst: eintrag?.dienst || "",
+    fahrzeug: ""
+};
+
+let ergebnis;
+
+if (eintrag?.id) {
+
+    ergebnis = await supabaseClient
         .from("Planung")
-        .upsert([{
-            fahrer: aktuellerFahrer,
-            datum: aktuellesDatum,
-            art: "Leer",
-            dienst: eintrag?.dienst || "",
-            fahrzeug: ""
-        }]);  
+        .update(daten)
+        .eq("id", eintrag.id);
+
+} else {
+
+    ergebnis = await supabaseClient
+        .from("Planung")
+        .insert([daten]);
+
+}
+
+const error = ergebnis.error;
 
                 if (error) {
                     console.log(error);
@@ -1013,56 +1029,54 @@ async function speicherePlanEintrag(
     alterEintrag
 ) {
 
-    plan[key] = {
+    const daten = {
+        fahrer: aktuellerFahrer,
+        datum: aktuellesDatum,
         art: art,
-        dienst:
-            dienst ||
-            alterEintrag?.dienst ||
-            "",
-        fahrzeug:
-            fahrzeug ||
-            alterEintrag?.fahrzeug ||
-            ""
+        dienst: dienst || alterEintrag?.dienst || "",
+        fahrzeug: fahrzeug || alterEintrag?.fahrzeug || ""
     };
 
-    const { error } =
-        await supabaseClient
+    let ergebnis;
+
+    if (alterEintrag?.id) {
+
+        // Vorhandenen Datensatz aktualisieren
+        ergebnis = await supabaseClient
             .from("Planung")
-            .upsert([
-                {
-                    fahrer:
-                        aktuellerFahrer,
+            .update(daten)
+            .eq("id", alterEintrag.id);
 
-                    datum:
-                        aktuellesDatum,
+    } else {
 
-                    art:
-                        art,
+        // Neuen Datensatz anlegen
+        ergebnis = await supabaseClient
+            .from("Planung")
+            .insert([daten]);
 
-                    dienst:
-                        plan[key].dienst,
+    }
 
-                    fahrzeug:
-                        plan[key].fahrzeug
-                }
-            ]);
+    if (ergebnis.error) {
 
-    if (error) {
-
-        console.log(error);
+        console.log(ergebnis.error);
 
         zeigeMeldung(
             "❌ Fehler beim Speichern"
         );
 
         return;
-
     }
+
+    // Aktuelle Planung aus Supabase neu laden
+    await ladePlanung();
 
     schliessenModal();
 
     ladePlan();
 
+    zeigeMeldung(
+        "✅ Dienst gespeichert"
+    );
 }
 async function speichernZelle() {
 
