@@ -1453,6 +1453,32 @@ if (planEintrag) {
 }
 
 console.log("Bestehender Dienst:", bestehenderDienst);
+   if (bestehenderDienst) {
+
+    zeigeKonflikt(
+        "Fahrer bereits eingeteilt",
+        "Der Fahrer hat bereits den Dienst: " +
+        bestehenderDienst +
+        ". Möchtest du diesen durch " +
+        daten.dienst +
+        " ersetzen?",
+        "Dienst ersetzen",
+        function () {
+
+            console.log(
+                "Ersetzen bestätigt:",
+                daten.dienst
+            );
+
+            zeigeMeldung(
+                "Ersetzen bestätigt"
+            );
+
+        }
+    );
+
+    return;
+} 
     console.log("Drag & Drop erkannt:", {
         fahrer: fahrer,
         datum: datum,
